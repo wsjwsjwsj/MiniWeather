@@ -14,8 +14,7 @@ public class NetUtil {
     public static final int NETWORN_MOBILE = 2;
 
     public static int getNetworkState(Context context) {
-        ConnectivityManager connManager = (ConnectivityManager)
-                context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        ConnectivityManager connManager = (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connManager.getActiveNetworkInfo();
         if (networkInfo == null) {
             return NETWORN_NONE;

@@ -108,18 +108,7 @@
                 android:text="湿度:57%"
                 android:textColor="@android:color/white"
                 android:textSize="15.0sp" />
-            <TextView
-                android:id="@+id/nowTemperature"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/humidity"
-                android:layout_alignParentLeft="true"
-                android:layout_marginLeft="15.0dip"
-                android:singleLine="true"
-                android:text="温度:22℃"
-                android:textColor="@android:color/white"
-                android:textSize="15.0sp"
-                />
+
             <!-- PM2.5整体信息块 -->
             <LinearLayout
                 android:id="@+id/pm2_5_content"
