@@ -9,6 +9,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -19,6 +20,7 @@ public class MyApplication extends Application{
     private static MyApplication myApplication;
     private CityDB cityDB;
     private List<City> cityList;
+    public HashMap<String,String> data=new HashMap<String, String>();
     @Override
     public void onCreate() {
         super.onCreate();
@@ -41,10 +43,11 @@ public class MyApplication extends Application{
         cityList=cityDB.getAllCity();
         int i=0;
         for(City city:cityList){
-            i++;
+
             String cityName=city.getCity();
             String cityNumber=city.getNumber();
-            Log.d("MyApplication",cityName+cityNumber);
+            i++;
+            data.put(cityName,cityNumber);
         }
         Log.d("MyApplication","i="+i);
         return true;

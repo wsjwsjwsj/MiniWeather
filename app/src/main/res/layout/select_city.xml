@@ -3,6 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
     <RelativeLayout
+        android:id="@+id/select_title"
         android:layout_width="match_parent"
         android:layout_height="45dp"
         android:background="#ffcd2626">
@@ -27,4 +28,11 @@
             android:background="#a71717"
             />
     </RelativeLayout>
+    <ListView
+        android:id="@+id/list_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/select_title">
+
+    </ListView>
 </RelativeLayout>
