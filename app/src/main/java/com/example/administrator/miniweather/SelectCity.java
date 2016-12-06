@@ -3,11 +3,17 @@ package com.example.administrator.miniweather;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
+import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
+
+import java.util.HashMap;
 
 /**
  * Created by Administrator on 2016/10/18.
@@ -15,9 +21,12 @@ import android.widget.ListView;
 public class SelectCity extends Activity implements View.OnClickListener{
     private ImageView mBackBtn;
     private ListView listView;
+    private EditText editText;
+
     private String cityCode;
-    private String[] city_name=(String[])MyApplication.getInstance().data.keySet().toArray(new String[0]);
-    private String[] city_number=(String[])MyApplication.getInstance().data.values().toArray(new String[0]);
+    private HashMap<String,String> data= MyApplication.getInstance().data;
+    private String[] city_name=(String[])data.keySet().toArray(new String[0]);
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -25,16 +34,36 @@ public class SelectCity extends Activity implements View.OnClickListener{
         mBackBtn=(ImageView)findViewById(R.id.title_back);
         mBackBtn.setOnClickListener(this);
         listView=(ListView)findViewById(R.id.list_view);
+        editText=(EditText)findViewById(R.id.search_edit);
+        final ArrayAdapter<String> adapter=new ArrayAdapter<String>(SelectCity.this,android.R.layout.simple_list_item_1,city_name);
+        editText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
-        ArrayAdapter<String> adapter=new ArrayAdapter<String>(SelectCity.this,android.R.layout.simple_list_item_1,city_name);
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                adapter.getFilter().filter(s);
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
+
         listView.setAdapter(adapter);
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener(){
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                cityCode=city_number[position];
+                Adapter adapter=parent.getAdapter();
+                String city=(String) adapter.getItem(position);
+                cityCode=data.get(city);
             }
         });
     }
+
 
     @Override
     public void onClick(View v) {
