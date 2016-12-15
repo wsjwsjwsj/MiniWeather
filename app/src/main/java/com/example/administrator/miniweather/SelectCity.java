@@ -12,6 +12,7 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import java.util.HashMap;
 
@@ -22,6 +23,7 @@ public class SelectCity extends Activity implements View.OnClickListener{
     private ImageView mBackBtn;
     private ListView listView;
     private EditText editText;
+    private TextView title;
 
     private String cityCode;
     private HashMap<String,String> data= MyApplication.getInstance().data;
@@ -31,6 +33,7 @@ public class SelectCity extends Activity implements View.OnClickListener{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.select_city);
+        title=(TextView)findViewById(R.id.title_name);
         mBackBtn=(ImageView)findViewById(R.id.title_back);
         mBackBtn.setOnClickListener(this);
         listView=(ListView)findViewById(R.id.list_view);
@@ -59,6 +62,7 @@ public class SelectCity extends Activity implements View.OnClickListener{
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Adapter adapter=parent.getAdapter();
                 String city=(String) adapter.getItem(position);
+                title.setText("当前选择城市："+city);
                 cityCode=data.get(city);
             }
         });

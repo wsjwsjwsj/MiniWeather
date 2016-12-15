@@ -29,7 +29,6 @@ public class Guide extends Activity implements ViewPager.OnPageChangeListener{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.guide);
         initViews();
-        initDots();
         button=(Button)views.get(2).findViewById(R.id.button);
         button.setOnClickListener(new View.OnClickListener(){
 
@@ -42,12 +41,6 @@ public class Guide extends Activity implements ViewPager.OnPageChangeListener{
         });
     }
 
-    private void initDots(){
-        dots=new ImageView[views.size()];
-        for(int i=0;i<views.size();i++){
-            dots[i]=(ImageView)findViewById(ids[i]);
-        }
-    }
 
     private void initViews(){
         LayoutInflater inflater=LayoutInflater.from(this);
@@ -59,6 +52,11 @@ public class Guide extends Activity implements ViewPager.OnPageChangeListener{
         viewPager=(ViewPager)findViewById(R.id.viewpager);
         viewPager.setAdapter(viewPagerAdapter);
         viewPager.setOnPageChangeListener(this);
+
+        dots=new ImageView[views.size()];
+        for(int i=0;i<views.size();i++){
+            dots[i]=(ImageView)findViewById(ids[i]);
+        }
     }
 
     @Override

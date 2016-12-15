@@ -14,7 +14,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:gravity="center"
-            android:text="当前城市"
+            android:text="选择城市"
             android:textColor="#ffffff"
             android:textSize="20dp" />
 

@@ -4,6 +4,8 @@ package com.example.administrator.miniweather;
  * Created by Administrator on 2016/10/15.
  */
 public class TodayWeather {
+    public FutureWeather[] futureWeather= new FutureWeather[4];
+
     private String city;
     private String updatetime;
     private String wendu;
@@ -16,6 +18,11 @@ public class TodayWeather {
     private String high;
     private String low;
     private String type;
+
+    public TodayWeather(){
+        for(int i=0;i<futureWeather.length;i++)
+            futureWeather[i]=new FutureWeather();
+    }
 
     public String getCity() {
         return city;
@@ -116,7 +123,8 @@ public class TodayWeather {
     @Override
     public String toString() {
         return "TodayWeather{" +
-                "city='" + city + '\'' +
+                "futureWeather=" + futureWeather[0].toString() + futureWeather[1].toString()+ futureWeather[2].toString()+ futureWeather[3].toString()+
+                ", city='" + city + '\'' +
                 ", updatetime='" + updatetime + '\'' +
                 ", wendu='" + wendu + '\'' +
                 ", shidu='" + shidu + '\'' +

@@ -117,6 +117,17 @@
                 android:text="湿度:57%"
                 android:textColor="@android:color/white"
                 android:textSize="15.0sp" />
+            <TextView
+                android:id="@+id/wendu"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_below="@id/humidity"
+                android:layout_marginLeft="15.0dip"
+                android:singleLine="true"
+                android:text="温度:20℃"
+                android:textColor="@android:color/white"
+                android:textSize="15.0sp" />
 
             <!-- PM2.5整体信息块 -->
             <LinearLayout
@@ -183,7 +194,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true"
-                android:layout_below="@id/humidity"
+                android:layout_below="@id/wendu"
                 android:layout_centerInParent="true"
                 android:layout_marginTop="5.0dip">
                 <!-- 天气情况图片示例 -->
@@ -243,7 +254,36 @@
                     android:textSize="20.0sp" />
             </RelativeLayout>
         </RelativeLayout>
-        <!-- 六日天气信息 -->
-        <!-- 广告等信息 -->
+
+        <RelativeLayout
+            android:layout_marginTop="30dp"
+            android:layout_marginBottom="20dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <android.support.v4.view.ViewPager
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/viewpager1">
+            </android.support.v4.view.ViewPager>
+        <LinearLayout
+            android:id="@+id/indicator"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:gravity="center_horizontal">
+            <ImageView
+                android:id="@+id/iv1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="5dp"
+                android:src="@drawable/page_indicator_focused"/>
+            <ImageView
+                android:id="@+id/iv2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="5dp"
+                android:src="@drawable/page_indicator_unfocused"/>
+        </LinearLayout>
+        </RelativeLayout>
     </LinearLayout>
 </RelativeLayout>

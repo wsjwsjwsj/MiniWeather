@@ -1,6 +1,5 @@
 package com.example.administrator.miniweather;
 
-import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
@@ -8,6 +7,9 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -20,21 +22,29 @@ import com.amap.api.location.AMapLocationClient;
 import com.amap.api.location.AMapLocationClientOption;
 import com.amap.api.location.AMapLocationListener;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 
 /**
  * Created by Administrator on 2016/9/25.
  */
-public class MainActivity extends Activity implements View.OnClickListener {
+public class MainActivity extends FragmentActivity implements View.OnClickListener,ViewPager.OnPageChangeListener{
     private static final int UPDATE_TODAY_WEATHER = 1;
     private ImageView mUpdateBtn;
     private ProgressBar mUpdateBar;
     private ImageView mCitySelect;
     private ImageView mLocation;
-    private TextView cityTv, timeTv, humidityTv, weekTv, pmDataTv, pmQualityTv, temperatureTv, climateTv, windTv, city_name_Tv;
+    private TextView cityTv, timeTv, humidityTv,wenduTv, weekTv, pmDataTv, pmQualityTv, temperatureTv, climateTv, windTv, city_name_Tv;
     private ImageView pmImg, weatherImg;
     private MyService myService;
+
+    private MyFragmentPagerAdapter myFragmentPagerAdapter;
+    private ViewPager viewPager;
+    private List<Fragment> fragments;
+    private ImageView[] dots;
+    private int[] ids={R.id.iv1,R.id.iv2};
 
     private HashMap<String,String> data= MyApplication.getInstance().data;
 
@@ -55,33 +65,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
     //声明AMapLocationClient类对象
     public AMapLocationClient mLocationClient = null;
     //声明定位回调监听器
-    public AMapLocationListener mLocationListener = new AMapLocationListener() {
-        @Override
-        public void onLocationChanged(AMapLocation amapLocation) {
-            if (amapLocation != null) {
-                if (amapLocation.getErrorCode() == 0) {
-                    amapLocation.getLatitude();//获取纬度
-                    amapLocation.getLongitude();//获取经度
-                    amapLocation.getAccuracy();//获取精度信息
-                    amapLocation.getAddress();//地址
-                    amapLocation.getCountry();//国家
-                    amapLocation.getProvince();//省
-                    Log.d("dingwei",data.get(amapLocation.getCity()).substring(0,data.get(amapLocation.getCity()).length()-2));//城市
-
-                    amapLocation.getDistrict();//城区
-                    amapLocation.getCityCode();//城市编码
-                    amapLocation.getAdCode();//地区编码
-                    myService.queryWeatherCode(data.get(amapLocation.getCity()).substring(0,data.get(amapLocation.getCity()).length()-2));;
-
-                }else {
-                    //定位失败时，可通过ErrCode（错误码）信息来确定失败的原因，errInfo是错误信息，详见错误码表。
-                    Log.e("AmapError","location Error, ErrCode:"
-                            + amapLocation.getErrorCode() + ", errInfo:"
-                            + amapLocation.getErrorInfo());
-                }
-            }
-        }
-    };
+    public AMapLocationListener mLocationListener =null;
     public AMapLocationClientOption mLocationOption = null;
 
     public Handler getHandler(){
@@ -101,6 +85,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
             myService.mainActivity=MainActivity.this;
         }
     };
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -123,23 +108,52 @@ public class MainActivity extends Activity implements View.OnClickListener {
         mCitySelect = (ImageView) findViewById(R.id.title_city_manager);
         mCitySelect.setOnClickListener(this);
         initView();
+        initFragments();
+    }
 
+    void initLocation(){
         //初始化定位
         mLocationClient = new AMapLocationClient(getApplicationContext());
-
-//设置定位回调监听
+        mLocationListener= new AMapLocationListener() {
+            @Override
+            public void onLocationChanged(AMapLocation amapLocation) {
+                Log.d("dingwei",amapLocation.getCity());
+                if (amapLocation!=null) {
+                    if (amapLocation.getErrorCode()==0) {
+                        amapLocation.getLatitude();//获取纬度
+                        amapLocation.getLongitude();//获取经度
+                        amapLocation.getAccuracy();//获取精度信息
+                        amapLocation.getAddress();//地址
+                        amapLocation.getCountry();//国家
+                        amapLocation.getProvince();//省
+                        Log.d("dingwei",data.get(amapLocation.getCity()).substring(0,amapLocation.getCity().length()-2));//城市
+                        amapLocation.getDistrict();//城区
+                        amapLocation.getCityCode();//城市编码
+                        amapLocation.getAdCode();//地区编码
+                        myService.queryWeatherCode(data.get(amapLocation.getCity()).substring(0,data.get(amapLocation.getCity()).length()-2));;
+                    }else {
+                        Log.e("AmapError","location Error, ErrCode:"
+                                + amapLocation.getErrorCode() + ", errInfo:"
+                                + amapLocation.getErrorInfo());
+                    }
+                    mLocationClient.stopLocation();
+                }
+            }
+        };
+        //设置定位回调监听
         mLocationClient.setLocationListener(mLocationListener);
         //初始化AMapLocationClientOption对象
         mLocationOption = new AMapLocationClientOption();
         //设置定位模式为AMapLocationMode.Hight_Accuracy，高精度模式。
         mLocationOption.setLocationMode(AMapLocationClientOption.AMapLocationMode.Hight_Accuracy);
         //获取一次定位结果：
-//该方法默认为false。
+        //该方法默认为false。
         mLocationOption.setOnceLocation(true);
-
-//获取最近3s内精度最高的一次定位结果：
-//设置setOnceLocationLatest(boolean b)接口为true，启动定位时SDK会返回最近3s内精度最高的一次定位结果。如果设置其为true，setOnceLocation(boolean b)接口也会被设置为true，反之不会，默认为false。
+        //获取最近3s内精度最高的一次定位结果：
+        //设置setOnceLocationLatest(boolean b)接口为true，启动定位时SDK会返回最近3s内精度最高的一次定位结果。如果设置其为true，setOnceLocation(boolean b)接口也会被设置为true，反之不会，默认为false。
         mLocationOption.setOnceLocationLatest(true);
+        //给定位客户端对象设置定位参数
+        mLocationClient.setLocationOption(mLocationOption);
     }
 
 
@@ -148,6 +162,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
         cityTv = (TextView) findViewById(R.id.city);
         timeTv = (TextView) findViewById(R.id.time);
         humidityTv = (TextView) findViewById(R.id.humidity);
+        wenduTv =(TextView)findViewById(R.id.wendu);
         weekTv = (TextView) findViewById(R.id.week_today);
         pmDataTv = (TextView) findViewById(R.id.pm_data);
         pmQualityTv = (TextView) findViewById(R.id.pm2_5_quality);
@@ -160,6 +175,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
         String city = sharedPreferences.getString("City", "");
         String time = sharedPreferences.getString("Updatetime", "");
         String humidity = sharedPreferences.getString("Shidu", "");
+        String wendu =sharedPreferences.getString("Wendu","");
         String data = sharedPreferences.getString("Pm25", "");
         String quality = sharedPreferences.getString("Quality", "");
         String week = sharedPreferences.getString("Date", "");
@@ -167,10 +183,11 @@ public class MainActivity extends Activity implements View.OnClickListener {
         String wind = sharedPreferences.getString("Fengli", "");
         String low = sharedPreferences.getString("Low", "");
         String high = sharedPreferences.getString("High", "");
-        city_name_Tv.setText(city);
+        city_name_Tv.setText(city+"天气");
         cityTv.setText(city);
-        timeTv.setText(time);
+        timeTv.setText(time+"发布");
         humidityTv.setText("湿度："+humidity);
+        wenduTv.setText("温度："+wendu+"℃");
         pmDataTv.setText(data);
         pmQualityTv.setText(quality);
         weekTv.setText(week);
@@ -276,10 +293,9 @@ public class MainActivity extends Activity implements View.OnClickListener {
             }
         }
         if (view.getId() == R.id.title_location) {
-//给定位客户端对象设置定位参数
-            mLocationClient.setLocationOption(mLocationOption);
-//启动定位
+            initLocation();
             mLocationClient.startLocation();
+            Toast.makeText(MainActivity.this, "定位", Toast.LENGTH_LONG).show();
         }
     }
 
@@ -306,7 +322,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
             SharedPreferences settings = (SharedPreferences) getSharedPreferences("config", MODE_PRIVATE);
             SharedPreferences.Editor editor = settings.edit();
 
-            city_name_Tv.setText(todayWeather.getCity());
+            city_name_Tv.setText(todayWeather.getCity()+"天气");
             editor.putString("City", todayWeather.getCity());
             cityTv.setText(todayWeather.getCity());
 
@@ -315,6 +331,9 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
             humidityTv.setText("湿度：" + todayWeather.getShidu());
             editor.putString("Shidu", todayWeather.getShidu());
+
+            wenduTv.setText("温度："+todayWeather.getWendu()+"℃");
+            editor.putString("Wendu", todayWeather.getWendu());
 
             pmDataTv.setText(todayWeather.getPm25());
             editor.putString("Pm25", todayWeather.getPm25());
@@ -409,8 +428,43 @@ public class MainActivity extends Activity implements View.OnClickListener {
                         weatherImg.setImageResource(R.drawable.biz_plugin_weather_zhongyu);
                         break;
                 }
+            ((MyFragment1)fragments.get(0)).update(todayWeather);
+            ((MyFragment2)fragments.get(1)).update(todayWeather);
             editor.commit();
             Toast.makeText(MainActivity.this, "更新成功！", Toast.LENGTH_SHORT).show();
         }
+    }
+
+    private void initFragments(){
+        fragments=new ArrayList<Fragment>();
+        fragments.add(new MyFragment1());
+        fragments.add(new MyFragment2());
+        myFragmentPagerAdapter = new MyFragmentPagerAdapter(getSupportFragmentManager(), fragments);
+        viewPager = (ViewPager)findViewById(R.id.viewpager1);
+        viewPager.setAdapter(myFragmentPagerAdapter);
+        viewPager.setOnPageChangeListener(this);
+
+        dots=new ImageView[fragments.size()];
+        for(int i=0;i<fragments.size();i++){
+            dots[i]=(ImageView)findViewById(ids[i]);
+        }
+    }
+    @Override
+    public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+    }
+
+    @Override
+    public void onPageSelected(int position) {
+        for (int a=0;a<ids.length;a++)
+            if(a==position)
+                dots[a].setImageResource(R.drawable.page_indicator_focused);
+            else
+                dots[a].setImageResource(R.drawable.page_indicator_unfocused);
+    }
+
+    @Override
+    public void onPageScrollStateChanged(int state) {
+
     }
 }

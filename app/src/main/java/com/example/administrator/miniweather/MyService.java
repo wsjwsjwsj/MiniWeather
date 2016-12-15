@@ -108,6 +108,33 @@ public class MyService extends Service {
                                 eventType = xmlPullParser.next();
                                 todayWeather.setType(xmlPullParser.getText());
                                 typeCount++;
+                            } else if (xmlPullParser.getName().equals("fengxiang") && fengxiangCount != 0 && fengxiangCount<=8) {
+                                eventType = xmlPullParser.next();
+                                if(fengxiangCount%2==0)
+                                todayWeather.futureWeather[fengxiangCount/2-1].setFengxiang(xmlPullParser.getText());
+                                fengxiangCount++;
+                            } else if (xmlPullParser.getName().equals("fengli") && fengliCount != 0 && fengliCount<=8) {
+                                eventType = xmlPullParser.next();
+                                if(fengliCount%2==0)
+                                todayWeather.futureWeather[fengliCount/2-1].setFengli(xmlPullParser.getText());
+                                fengliCount++;
+                            } else if (xmlPullParser.getName().equals("date") && dateCount != 0 && dateCount<=4) {
+                                eventType = xmlPullParser.next();
+                                todayWeather.futureWeather[dateCount-1].setDate(xmlPullParser.getText());
+                                dateCount++;
+                            } else if (xmlPullParser.getName().equals("high") && highCount != 0 && highCount<=4) {
+                                eventType = xmlPullParser.next();
+                                todayWeather.futureWeather[highCount-1].setHigh(xmlPullParser.getText().substring(2).trim());
+                                highCount++;
+                            } else if (xmlPullParser.getName().equals("low") && lowCount != 0 && lowCount<=4) {
+                                eventType = xmlPullParser.next();
+                                todayWeather.futureWeather[lowCount-1].setLow(xmlPullParser.getText().substring(2).trim());
+                                lowCount++;
+                            } else if (xmlPullParser.getName().equals("type") && typeCount != 0 && typeCount<=8) {
+                                eventType = xmlPullParser.next();
+                                if(typeCount%2==0)
+                                todayWeather.futureWeather[typeCount/2-1].setType(xmlPullParser.getText());
+                                typeCount++;
                             }
                         }
                         break;
@@ -121,6 +148,12 @@ public class MyService extends Service {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        fengxiangCount = 0;
+        fengliCount = 0;
+        dateCount = 0;
+        highCount = 0;
+        lowCount = 0;
+        typeCount = 0;
         return todayWeather;
     }
 
