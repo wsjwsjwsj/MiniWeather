@@ -43,7 +43,6 @@ public class MyApplication extends Application{
         cityList=cityDB.getAllCity();
         int i=0;
         for(City city:cityList){
-
             String cityName=city.getCity();
             String cityNumber=city.getNumber();
             i++;
@@ -53,8 +52,8 @@ public class MyApplication extends Application{
         return true;
     }
 
-    public List<City> getCityList(){
-        return cityList;
+    public  HashMap<String,String> getCityMap(){
+        return data;
     }
 
     public static MyApplication getInstance(){

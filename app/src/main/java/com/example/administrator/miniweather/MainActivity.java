@@ -17,13 +17,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.amap.api.location.AMapLocation;
-import com.amap.api.location.AMapLocationClient;
-import com.amap.api.location.AMapLocationClientOption;
-import com.amap.api.location.AMapLocationListener;
-
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 
@@ -46,7 +40,7 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
     private ImageView[] dots;
     private int[] ids={R.id.iv1,R.id.iv2};
 
-    private HashMap<String,String> data= MyApplication.getInstance().data;
+
 
     private Handler mHandler = new Handler() {
         public void handleMessage(android.os.Message msg) {
@@ -61,12 +55,6 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
             }
         }
     };
-
-    //声明AMapLocationClient类对象
-    public AMapLocationClient mLocationClient = null;
-    //声明定位回调监听器
-    public AMapLocationListener mLocationListener =null;
-    public AMapLocationClientOption mLocationOption = null;
 
     public Handler getHandler(){
         return this.mHandler;
@@ -110,52 +98,6 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
         initView();
         initFragments();
     }
-
-    void initLocation(){
-        //初始化定位
-        mLocationClient = new AMapLocationClient(getApplicationContext());
-        mLocationListener= new AMapLocationListener() {
-            @Override
-            public void onLocationChanged(AMapLocation amapLocation) {
-                Log.d("dingwei",amapLocation.getCity());
-                if (amapLocation!=null) {
-                    if (amapLocation.getErrorCode()==0) {
-                        amapLocation.getLatitude();//获取纬度
-                        amapLocation.getLongitude();//获取经度
-                        amapLocation.getAccuracy();//获取精度信息
-                        amapLocation.getAddress();//地址
-                        amapLocation.getCountry();//国家
-                        amapLocation.getProvince();//省
-                        Log.d("dingwei",data.get(amapLocation.getCity()).substring(0,amapLocation.getCity().length()-2));//城市
-                        amapLocation.getDistrict();//城区
-                        amapLocation.getCityCode();//城市编码
-                        amapLocation.getAdCode();//地区编码
-                        myService.queryWeatherCode(data.get(amapLocation.getCity()).substring(0,data.get(amapLocation.getCity()).length()-2));;
-                    }else {
-                        Log.e("AmapError","location Error, ErrCode:"
-                                + amapLocation.getErrorCode() + ", errInfo:"
-                                + amapLocation.getErrorInfo());
-                    }
-                    mLocationClient.stopLocation();
-                }
-            }
-        };
-        //设置定位回调监听
-        mLocationClient.setLocationListener(mLocationListener);
-        //初始化AMapLocationClientOption对象
-        mLocationOption = new AMapLocationClientOption();
-        //设置定位模式为AMapLocationMode.Hight_Accuracy，高精度模式。
-        mLocationOption.setLocationMode(AMapLocationClientOption.AMapLocationMode.Hight_Accuracy);
-        //获取一次定位结果：
-        //该方法默认为false。
-        mLocationOption.setOnceLocation(true);
-        //获取最近3s内精度最高的一次定位结果：
-        //设置setOnceLocationLatest(boolean b)接口为true，启动定位时SDK会返回最近3s内精度最高的一次定位结果。如果设置其为true，setOnceLocation(boolean b)接口也会被设置为true，反之不会，默认为false。
-        mLocationOption.setOnceLocationLatest(true);
-        //给定位客户端对象设置定位参数
-        mLocationClient.setLocationOption(mLocationOption);
-    }
-
 
     void initView() {
         city_name_Tv = (TextView) findViewById(R.id.title_city_name);
@@ -293,16 +235,30 @@ public class MainActivity extends FragmentActivity implements View.OnClickListen
             }
         }
         if (view.getId() == R.id.title_location) {
-            initLocation();
-            mLocationClient.startLocation();
+            Intent i = new Intent(this, Location.class);
+            startActivityForResult(i, 2);
             Toast.makeText(MainActivity.this, "定位", Toast.LENGTH_LONG).show();
-        }
+            }
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == 1 && resultCode == RESULT_OK && data.getStringExtra("cityCode")!=null ){
             String newCityCode = data.getStringExtra("cityCode");
             Log.d("myWeather", "选择的城市代码为" + newCityCode);
+            SharedPreferences settings = (SharedPreferences) getSharedPreferences("config", MODE_PRIVATE);
+            SharedPreferences.Editor editor = settings.edit();
+            editor.putString("main_city_code", newCityCode);
+            editor.commit();
+            if (NetUtil.getNetworkState(this) != NetUtil.NETWORN_NONE) {
+                Log.d("myWeather", "网络已连接");
+                myService.queryWeatherCode(newCityCode);
+            } else {
+                Log.d("myWeather", "网络未连接");
+                Toast.makeText(MainActivity.this, "网络未连接", Toast.LENGTH_LONG).show();
+            }
+        }else if(requestCode == 2 && resultCode == RESULT_OK && data.getStringExtra("cityCode")!=null ){
+            String newCityCode = data.getStringExtra("cityCode");
+            Log.d("myWeather", "定位的城市代码为" + newCityCode);
             SharedPreferences settings = (SharedPreferences) getSharedPreferences("config", MODE_PRIVATE);
             SharedPreferences.Editor editor = settings.edit();
             editor.putString("main_city_code", newCityCode);

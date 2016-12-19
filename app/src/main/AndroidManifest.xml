@@ -42,6 +42,8 @@
         </activity>
         <service android:name=".MyService">
         </service>
+        <activity android:name=".Location">
+        </activity>
 
     </application>
 
