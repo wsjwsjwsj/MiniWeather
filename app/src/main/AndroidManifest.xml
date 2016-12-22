@@ -28,15 +28,19 @@
             android:name="com.amap.api.v2.apikey"
             android:value="63c325c909540c9c3fb66f275203e5e1" />
 
+        <activity android:name=".SplashActivity">
+            <intent-filter>
+            <action android:name="android.intent.action.MAIN"/>
+            <category android:name="android.intent.category.LAUNCHER"/>
+            </intent-filter>
+        </activity>
+
         <activity android:name=".Guide">
 
         </activity>
 
         <activity android:name=".MainActivity">
-             <intent-filter>
-                 <action android:name="android.intent.action.MAIN"/>
-                 <category android:name="android.intent.category.LAUNCHER"/>
-             </intent-filter>
+
         </activity>
         <activity android:name=".SelectCity">
         </activity>
