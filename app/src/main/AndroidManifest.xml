@@ -28,6 +28,19 @@
             android:name="com.amap.api.v2.apikey"
             android:value="63c325c909540c9c3fb66f275203e5e1" />
 
+        <meta-data
+            android:name="UMENG_APPKEY"
+            android:value="585b8ee307fe654bee0011e9">
+        </meta-data>
+        <meta-data
+            android:name="UMENG_MESSAGE_SECRET"
+            android:value="a625ffb60320158b85ff98b4870a6c94">
+        </meta-data>
+        <meta-data
+            android:name="UMENG_CHANNEL"
+            android:value="Channel ID" >
+        </meta-data>
+
         <activity android:name=".SplashActivity">
             <intent-filter>
             <action android:name="android.intent.action.MAIN"/>
